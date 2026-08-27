@@ -1,0 +1,62 @@
+@import "tailwindcss";
+
+@theme {
+  --color-cream: #faf6ee;
+  --color-parchment: #f3ecdd;
+  --color-navy: #1c3350;
+  --color-navy-deep: #142640;
+  --color-navy-soft: #2c4a6e;
+  --color-gold: #c19a3d;
+  --color-gold-soft: #d9bc72;
+  --color-gold-pale: #f0e6c8;
+  --color-ink: #2a2d33;
+  --color-ink-soft: #5a6472;
+
+  --font-display: "Palatino Linotype", Palatino, "Book Antiqua", Georgia, serif;
+  --font-body: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+}
+
+body {
+  background: var(--color-cream);
+  color: var(--color-ink);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+}
+
+.font-display {
+  font-family: var(--font-display);
+}
+
+/* Subtle candle-glow accent used on the hero */
+.glow-dot {
+  background: radial-gradient(
+    circle,
+    rgba(217, 188, 114, 0.5) 0%,
+    rgba(217, 188, 114, 0) 70%
+  );
+}
+
+/* Family profile avatars: gentle idle bob, pop on check-in */
+.avatar-wrap {
+  animation: avatar-bob 3.4s ease-in-out infinite;
+  transform-origin: bottom center;
+}
+.avatar-wrap:nth-child(2n) {
+  animation-delay: -1.1s;
+}
+.avatar-pop {
+  animation: avatar-pop 0.6s ease-out;
+}
+@keyframes avatar-bob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+@keyframes avatar-pop {
+  0% { transform: scale(1); }
+  40% { transform: scale(1.18) rotate(-3deg); }
+  100% { transform: scale(1); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .avatar-wrap, .avatar-pop { animation: none; }
+}

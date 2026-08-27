@@ -1,0 +1,117 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+// Postgres (Neon/Supabase/Vercel Postgres). For laptop-only tinkering without
+// a database, flip provider to "sqlite" and set DATABASE_URL="file:./dev.db".
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// A household is the unit that signs up: one phone/email, one or more people.
+model Household {
+  id         String   @id @default(cuid())
+  token      String   @unique // personal check-in link token
+  familyName String? // "Gofman" -> shown as "The Gofman Family"
+  phone      String?
+  email      String?
+  email2     String? // additional reminder recipients (e.g. both parents)
+  email3     String?
+  createdAt  DateTime @default(now())
+
+  smsOptIn   Boolean @default(true)
+  emailOptIn Boolean @default(true)
+
+  members Member[]
+
+  @@index([phone])
+  @@index([email])
+}
+
+// A member is a person taking on commitments (parent, kid, etc.)
+model Member {
+  id          String  @id @default(cuid())
+  householdId String
+  name        String
+  isChild     Boolean @default(false)
+  gender      String? // "boy" | "girl" for kids — drives the signup incentives
+
+  household Household @relation(fields: [householdId], references: [id], onDelete: Cascade)
+  goals     Goal[]
+
+  @@index([householdId])
+}
+
+// The catalog of things people can take on, editable by admins.
+model Suggestion {
+  id       String  @id @default(cuid())
+  title    String
+  detail   String?
+  // How this counts toward the homepage highlight reel:
+  // unitLabel e.g. "minutes added to Shabbos", "tables set", "challos baked"
+  // unitValue e.g. 15 (minutes) or 1 (table)
+  unitLabel String
+  unitValue Int     @default(1)
+  // Comma-separated categories this option is offered to:
+  // any of "man","woman","boy","girl" (e.g. "man,woman")
+  categories String @default("man,woman,boy,girl")
+  // Legacy field kept for old rows; categories is authoritative
+  audience  String  @default("both")
+  sortOrder Int     @default(0)
+  active    Boolean @default(true)
+
+  goals Goal[]
+}
+
+// One member's commitment for one week of the campaign.
+model Goal {
+  id           String  @id @default(cuid())
+  memberId     String
+  week         Int // 1-based campaign week
+  suggestionId String?
+  customTitle  String? // if they typed their own thing
+  createdAt    DateTime @default(now())
+
+  checkedInAt DateTime? // set when they confirm they did it
+
+  member     Member      @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  suggestion Suggestion? @relation(fields: [suggestionId], references: [id], onDelete: SetNull)
+
+  @@index([memberId, week])
+  @@index([week])
+}
+
+// Singleton campaign configuration (id is always "campaign").
+model Campaign {
+  id            String   @id @default("campaign")
+  name          String   @default("The Elul Shabbos Project")
+  startDate     DateTime // first day of week 1
+  weeks         Int      @default(4)
+  signupDeadline DateTime? // for the $5-per-signup pledge
+  pledgePerSignup  Int @default(5) // dollars
+  pledgePerCheckin Int @default(1) // dollars
+  charityName   String   @default("Tomchei Shabbos")
+}
+
+// One pizza-raffle winner per campaign week, drawn (in admin) from the
+// families where everyone checked in.
+model RaffleDraw {
+  id          String   @id @default(cuid())
+  week        Int      @unique
+  householdId String
+  familyName  String
+  drawnAt     DateTime @default(now())
+}
+
+// Log of every reminder sent, for admin visibility and dedupe.
+model MessageLog {
+  id          String   @id @default(cuid())
+  householdId String
+  kind        String // "thursday_reminder" | "checkin_reminder" | "manual"
+  channel     String // "sms" | "email" | "whatsapp" | "console"
+  week        Int
+  sentAt      DateTime @default(now())
+
+  @@index([householdId, kind, week])
+}

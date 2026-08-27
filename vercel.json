@@ -1,0 +1,12 @@
+{
+  "crons": [
+    {
+      "path": "/api/cron/thursday",
+      "schedule": "0 16 * * 4"
+    },
+    {
+      "path": "/api/cron/checkin",
+      "schedule": "0 16 * * 0,2"
+    }
+  ]
+}

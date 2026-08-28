@@ -8,11 +8,11 @@ import "./globals.css";
 export const metadata: Metadata = {
   metadataBase: new URL(shul.siteUrl),
   title: `The Shabbos Project | ${shul.name}`,
-  description: `One small thing for Shabbos, every week of Elul. Join the ${shul.name} community campaign.`,
+  description: `One small thing for Shabbos, for one full month. Join the ${shul.name} community campaign.`,
   openGraph: {
     title: "The Shabbos Project",
     description:
-      "One small thing for Shabbos, every week of Elul. Men, women & children — sign up, get a weekly reminder, and watch the whole shul's numbers grow.",
+      "One small thing for Shabbos, for one full month. Men, women & children — sign up, get a weekly reminder, and watch the whole shul's numbers grow.",
     url: shul.siteUrl,
     siteName: "The Shabbos Project",
   },

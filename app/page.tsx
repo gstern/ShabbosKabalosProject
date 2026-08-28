@@ -83,11 +83,11 @@ export default async function Home() {
           <h1 className="font-display text-4xl sm:text-5xl leading-tight mb-6">
             One small thing for Shabbos.
             <br />
-            Every week of Elul.
+            For one full month.
           </h1>
           <p className="text-cream/85 text-lg max-w-xl mb-8">
             Every man, woman, and child takes on one extra way to honor
-            Shabbos, held for the four Shabbosos through Shabbos Shuva. Learn
+            Shabbos, held for the four weeks of the campaign. Learn
             at the table, set it Thursday night, sing the zemiros. Small
             commitments, taken on together.
           </p>

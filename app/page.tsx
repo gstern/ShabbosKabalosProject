@@ -186,8 +186,8 @@ export default async function Home() {
               The Aruch LaNer tells us that when Rosh Hashanah falls on Shabbos and the 
               shofar goes silent, the year that follows tends to be extraordinary, 
               for blessing or for tragedy. On that day it is not the shofar that pleads 
-              for Klal Yisroel. It is Shabbos itself that stands as our 
-              <strong>meilitz yosher</strong>, our advocate. How we hold Shabbos 
+              for Klal Yisroel. It is Shabbos itself that stands as 
+              our <strong>meilitz yosher</strong>, our advocate. How we hold Shabbos 
               becomes how the year holds us.
             </p>
             <p className="font-medium text-navy">

@@ -24,8 +24,6 @@ export default async function SignupPage() {
       </p>
       <SignupForm
         suggestions={suggestions}
-        charityName={campaign.charityName}
-        pledge={campaign.pledgePerSignup}
       />
     </div>
   );

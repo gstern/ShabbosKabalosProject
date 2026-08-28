@@ -86,7 +86,7 @@ export default async function AdminPage() {
     ``,
     `Shabbos ${upShabbos} is coming! Whatever you signed up for this week — this is your Shabbos to do it. 💪`,
     ``,
-    `Not signed up yet? It takes 30 seconds, the whole family can join, and every family that signs up sends $${campaign.pledgePerSignup} to ${campaign.charityName}:`,
+    `Not signed up yet? It takes 30 seconds, and the whole family can join:`,
     shul.siteUrl,
   ].join("\n");
   const checkinBlast = [

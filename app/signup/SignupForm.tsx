@@ -25,12 +25,8 @@ const emptyPerson = (): PersonDraft => ({
 
 export default function SignupForm({
   suggestions,
-  charityName = "Tomchei Shabbos",
-  pledge = 5,
 }: {
   suggestions: SuggestionOption[];
-  charityName?: string;
-  pledge?: number;
 }) {
   const [familyName, setFamilyName] = useState("");
   const [phone, setPhone] = useState("");
@@ -131,8 +127,7 @@ export default function SignupForm({
         <p className="text-ink-soft mb-6">
           Your family profile is ready, and your commitments are set for the
           whole campaign. We&rsquo;ll email you before each Shabbos, and again
-          afterward to check in. Your family&rsquo;s ${pledge} is on its way to{" "}
-          {charityName}.
+          afterward to check in.
         </p>
         <a
           href={link}

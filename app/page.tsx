@@ -153,19 +153,6 @@ export default async function Home() {
         </section>
       )}
 
-      {/* Pledge banner */}
-      <section className="bg-gold-pale border-y border-gold/30">
-        <div className="mx-auto max-w-3xl px-4 py-5 text-center">
-          <p className="text-navy-deep">
-            <span className="font-semibold">
-              ${stats.pledgeTotal.toLocaleString()}
-            </span>{" "}
-            pledged so far to <span className="font-semibold">{stats.charityName}</span> —
-            ${campaign.pledgePerSignup} for every family that signs up.
-          </p>
-        </div>
-      </section>
-
       {/* Pizza raffle winner */}
       {latestDraw && (
         <section className="mx-auto max-w-3xl px-4 pt-10">
@@ -373,16 +360,7 @@ export default async function Home() {
           <p className="text-cream/70 text-center mb-8">
             Your commitment does more than build your own Shabbos.
           </p>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div className="rounded-xl border border-cream/20 bg-navy-soft/40 p-5 text-center">
-              <div className="font-display text-4xl text-gold-soft mb-1">
-                ${campaign.pledgePerSignup}
-              </div>
-              <p className="text-cream/85 text-sm leading-relaxed">
-                to <strong>{stats.charityName}</strong> for every family that
-                signs up
-              </p>
-            </div>
+          <div className="flex justify-center">
             <div className="rounded-xl border border-gold/50 bg-navy-soft/40 p-5 text-center">
               <div className="text-4xl mb-1">🍕</div>
               <p className="text-cream/85 text-sm leading-relaxed">
@@ -409,8 +387,6 @@ export default async function Home() {
         checkinOpen={checkinOpen}
         checkinHref={checkinHref}
         checkinLabel={lastLabel}
-        charityName={stats.charityName}
-        pledge={campaign.pledgePerSignup}
       />
       {shul.partnerName && <LinkWelcome partnerName={shul.partnerName} />}
     </div>

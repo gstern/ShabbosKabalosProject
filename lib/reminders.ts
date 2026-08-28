@@ -86,7 +86,7 @@ export async function runThursdayReminders(): Promise<ReminderRunResult> {
 
     const link = `${baseUrl()}/c/${h.token}`;
     const lines: string[] = [];
-    lines.push(`🕯️ Shabbos is coming — ${shabbosLabel}! Week ${week} of ${campaign.weeks} of the Elul Shabbos Project.`);
+    lines.push(`🕯️ Shabbos is coming — ${shabbosLabel}! Week ${week} of ${campaign.weeks} of the Shabbos Project.`);
     if (withGoal.length > 0) {
       lines.push("");
       for (const { m, goals } of withGoal) {
@@ -111,7 +111,7 @@ export async function runThursdayReminders(): Promise<ReminderRunResult> {
 
     const channel = await sendToHousehold(
       h,
-      { subject: `Shabbos is coming — week ${week} of the Elul Shabbos Project`, text: lines.join("\n") },
+      { subject: `Shabbos is coming — week ${week} of the Shabbos Project`, text: lines.join("\n") },
       "thursday_reminder",
       week
     );
@@ -200,7 +200,7 @@ export async function runCheckinReminders(): Promise<ReminderRunResult> {
     const subject =
       wave === 1
         ? `How did Shabbos go? Check in — week ${week}`
-        : `Still time to check in — week ${week} of the Elul Shabbos Project`;
+        : `Still time to check in — week ${week} of the Shabbos Project`;
 
     const channel = await sendToHousehold(h, { subject, text }, kind, week);
     if (channel) {

@@ -8,7 +8,7 @@ import Avatar from "@/components/Avatar";
 export const dynamic = "force-dynamic";
 
 export const metadata = {
-  title: "The Families | The Elul Shabbos Project",
+  title: "The Families | The Shabbos Project",
 };
 
 export default async function FamiliesPage() {
@@ -36,7 +36,7 @@ export default async function FamiliesPage() {
   return (
     <div className="mx-auto max-w-3xl px-4 py-10">
       <h1 className="font-display text-3xl sm:text-4xl text-navy mb-2 text-center">
-        The families of the Elul Shabbos Project
+        The families of the Shabbos Project
       </h1>
       <p className="text-ink-soft text-center mb-8">
         {families.length === 0 ? (

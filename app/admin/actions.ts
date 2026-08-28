@@ -32,7 +32,7 @@ export async function saveCampaignAction(formData: FormData) {
   await prisma.campaign.update({
     where: { id: "campaign" },
     data: {
-      name: String(formData.get("name") ?? "The Elul Shabbos Project").slice(0, 100),
+      name: String(formData.get("name") ?? "The Shabbos Project").slice(0, 100),
       weeks: Math.max(1, Math.min(12, Number(formData.get("weeks")) || 4)),
       // Dates entered in LA time (campaign is LA-based; August offset is -07:00)
       startDate: startDateStr ? new Date(`${startDateStr}T00:00:00-07:00`) : undefined,

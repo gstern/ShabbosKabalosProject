@@ -45,13 +45,13 @@ export default function LinkWelcome({ partnerName = "LINK Kollel" }: { partnerNa
       >
         <div className="text-5xl mb-3">🕯️✨</div>
         <p className="font-display tracking-[0.22em] uppercase text-sm text-gold mb-2">
-          The Elul Shabbos Project
+          The Shabbos Project
         </p>
         <h2 className="font-display text-3xl text-navy mb-3">
           Welcome, {shortName} Community!
         </h2>
         <p className="text-ink-soft mb-5">
-          {partnerName} has joined the Elul Shabbos Project — one more
+          {partnerName} has joined the Shabbos Project — one more
           community holding Shabbos together through the Yamim Noraim.
         </p>
         <div className="font-display text-navy-deep text-lg leading-relaxed mb-6">

@@ -48,7 +48,7 @@ async function sendResend(to: string[], subject: string, text: string): Promise<
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      from: process.env.EMAIL_FROM ?? "Elul Shabbos Project <onboarding@resend.dev>",
+      from: process.env.EMAIL_FROM ?? "Shabbos Project <onboarding@resend.dev>",
       to,
       subject,
       text,

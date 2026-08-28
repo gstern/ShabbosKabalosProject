@@ -85,7 +85,7 @@ model Goal {
 // Singleton campaign configuration (id is always "campaign").
 model Campaign {
   id            String   @id @default("campaign")
-  name          String   @default("The Elul Shabbos Project")
+  name          String   @default("The Shabbos Project")
   startDate     DateTime // first day of week 1
   weeks         Int      @default(4)
   signupDeadline DateTime? // for the $5-per-signup pledge

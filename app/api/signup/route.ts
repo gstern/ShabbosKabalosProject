@@ -242,7 +242,7 @@ export async function POST(req: NextRequest) {
             .join(" + ")}`
       );
     const text = [
-      `Welcome to the Elul Shabbos Project! 🕯️`,
+      `Welcome to the Shabbos Project! 🕯️`,
       ``,
       `The ${familyName} family has taken on their commitments for the four Shabbosos of the campaign — starting Shabbos ${formatShabbosDate(shabbosOfWeek(campaign, week))}, through Shabbos Shuva:`,
       ...lines,
@@ -259,7 +259,7 @@ export async function POST(req: NextRequest) {
     ].join("\n");
     sendToHousehold(
       household,
-      { subject: `Your family page — The Elul Shabbos Project`, text },
+      { subject: `Your family page — The Shabbos Project`, text },
       "welcome",
       week
     ).catch(() => {});

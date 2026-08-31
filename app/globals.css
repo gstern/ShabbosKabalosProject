@@ -57,6 +57,12 @@ body {
   40% { transform: scale(1.18) rotate(-3deg); }
   100% { transform: scale(1); }
 }
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .avatar-wrap, .avatar-pop { animation: none; }
+  .animate-\[marquee_30s_linear_infinite\] { animation: none; }
 }

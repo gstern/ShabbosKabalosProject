@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { readdir } from "fs/promises";
+import path from "path";
 import { cookies } from "next/headers";
 import {
   getCampaign,
@@ -19,6 +21,15 @@ import LinkWelcome from "@/components/LinkWelcome";
 export const dynamic = "force-dynamic";
 
 export default async function Home() {
+  const shulLogos = await readdir(path.join(process.cwd(), "public", "shul-logos"))
+    .then((files) =>
+      files
+        .filter((file) => /\.(png|jpe?g|svg|webp|gif)$/i.test(file))
+        .sort((a, b) => a.localeCompare(b))
+        .map((file) => `/shul-logos/${encodeURIComponent(file)}`)
+    )
+    .catch(() => []);
+
   const campaign = await getCampaign();
   const week = activeWeek(campaign);
   const rawWeek = weekNumber(campaign);
@@ -131,6 +142,43 @@ export default async function Home() {
               <>Campaign begins the week of {formatShabbosDate(shabbosOfWeek(campaign, 1))}</>
             )}
           </p>
+          <p className="text-gold-soft font-display tracking-widest uppercase text-sm mb-4">
+            Participating Shuls:
+          </p>
+          {shulLogos.length > 0 && (
+            <div className="mt-3">
+              {shulLogos.length === 1 ? (
+                <div className="flex items-center justify-center">
+                  <div className="flex items-center justify-center rounded-xl border border-cream/20 bg-white/5 px-4 py-3 shadow-sm backdrop-blur-sm">
+                    <img
+                      src={shulLogos[0]}
+                      alt="Participating shul logo"
+                      className="max-h-12 w-auto max-w-[140px] object-contain"
+                    />
+                  </div>
+                </div>
+              ) : (
+                <div className="relative overflow-hidden">
+                  <div className="pointer-events-none absolute inset-y-0 left-0 w-10 bg-gradient-to-r from-navy to-transparent" />
+                  <div className="pointer-events-none absolute inset-y-0 right-0 w-10 bg-gradient-to-l from-navy to-transparent" />
+                  <div className="flex min-w-max animate-[marquee_30s_linear_infinite] items-center gap-4 sm:gap-6">
+                    {[...shulLogos, ...shulLogos].map((src, index) => (
+                      <div
+                        key={`${src}-${index}`}
+                        className="flex items-center justify-center rounded-xl border border-cream/20 bg-white/5 px-4 py-3 shadow-sm backdrop-blur-sm"
+                      >
+                        <img
+                          src={src}
+                          alt={`Participating shul logo ${index + 1}`}
+                          className="max-h-12 w-auto max-w-[140px] object-contain"
+                        />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </section>
 

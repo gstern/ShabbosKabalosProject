@@ -205,7 +205,7 @@ export default async function Home() {
       {/* Highlight reel */}
       <section className="mx-auto max-w-3xl px-4 py-12">
         <h2 className="font-display text-3xl text-navy mb-2 text-center">
-          What our shul has taken on
+          What our community has taken on
         </h2>
         <p className="text-ink-soft text-center mb-8">
           Every check-in adds to the count — watch it grow each week.

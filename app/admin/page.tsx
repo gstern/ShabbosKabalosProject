@@ -82,7 +82,7 @@ export default async function AdminPage() {
   const doneWeek = lastShabbosWeek(campaign);
   const upShabbos = formatShabbosDate(shabbosOfWeek(campaign, upWeek));
   const preShabbosBlast = [
-    `🕯️ *The Shabbos Project — Week ${upWeek} of ${campaign.weeks}*`,
+    `🕯️ *The Chicago Shabbos Project — Week ${upWeek} of ${campaign.weeks}*`,
     ``,
     `Shabbos ${upShabbos} is coming! Whatever you signed up for this week — this is your Shabbos to do it. 💪`,
     ``,

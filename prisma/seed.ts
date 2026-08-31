@@ -263,7 +263,7 @@ async function main() {
     update: {},
     create: {
       id: "campaign",
-      name: "The Shabbos Project",
+      name: "The Chicago Shabbos Project",
       // Week 1 = the week of the first Shabbos of Elul 5786 (Aug 15, 2026)
       startDate: new Date("2026-08-09T00:00:00-07:00"),
       weeks: 4,

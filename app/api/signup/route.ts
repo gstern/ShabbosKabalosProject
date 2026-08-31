@@ -242,9 +242,9 @@ export async function POST(req: NextRequest) {
             .join(" + ")}`
       );
     const text = [
-      `Welcome to the Shabbos Project! 🕯️`,
+      `Welcome to the Chicago Shabbos Project! 🕯️`,
       ``,
-      `The ${familyName} family has taken on their commitments for the four Shabbosos of the campaign — starting Shabbos ${formatShabbosDate(shabbosOfWeek(campaign, week))}, through Shabbos Shuva:`,
+      `The ${familyName} family has taken on their commitments for the four Shabbosos of the campaign — starting Shabbos ${formatShabbosDate(shabbosOfWeek(campaign, week))}:`,
       ...lines,
       ``,
       `Your family page — there's no password, this link IS your login:`,
@@ -259,7 +259,7 @@ export async function POST(req: NextRequest) {
     ].join("\n");
     sendToHousehold(
       household,
-      { subject: `Your family page — The Shabbos Project`, text },
+      { subject: `Your family page — The Chicago Shabbos Project`, text },
       "welcome",
       week
     ).catch(() => {});

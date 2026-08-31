@@ -18,8 +18,8 @@ export default async function SignupPage() {
       <p className="text-ink-soft mb-8">
         Sign up your whole household — each person takes on one or more
         commitments and holds them for the four Shabbosos of the campaign,
-        {" "}{formatShabbosDate(shabbosOfWeek(campaign, 1))} through Shabbos
-        Shuva, {formatShabbosDate(shabbosOfWeek(campaign, campaign.weeks))} —
+        {" "}{formatShabbosDate(shabbosOfWeek(campaign, 1))} for a full 
+        month, {formatShabbosDate(shabbosOfWeek(campaign, campaign.weeks))} —
         with the hope that they become permanent.
       </p>
       <SignupForm

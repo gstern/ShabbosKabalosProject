@@ -79,7 +79,7 @@ export default async function Home() {
         <div className="glow-dot absolute -top-24 right-0 h-96 w-96 rounded-full" />
         <div className="mx-auto max-w-3xl px-4 py-16 sm:py-20 relative">
           <div className="mb-6 flex items-center gap-5">
-            <LogoOnDark className="h-14 w-auto" />
+            <LogoOnDark className="h-20 w-auto" />
             {shul.partnerName && (
               <>
                 <span className="h-12 w-px bg-cream/25" aria-hidden />
@@ -142,35 +142,30 @@ export default async function Home() {
               <>Campaign begins the week of {formatShabbosDate(shabbosOfWeek(campaign, 1))}</>
             )}
           </p>
-          <p className="text-gold-soft font-display tracking-widest uppercase text-sm mb-4">
-            Participating Shuls:
+          <p className="text-gold-soft font-display tracking-widest text-sm mb-4">
+            <br/>Participating Shuls:
           </p>
           {shulLogos.length > 0 && (
             <div className="mt-3">
               {shulLogos.length === 1 ? (
-                <div className="flex items-center justify-center">
-                  <div className="flex items-center justify-center rounded-xl border border-cream/20 bg-white/5 px-4 py-3 shadow-sm backdrop-blur-sm">
-                    <img
-                      src={shulLogos[0]}
-                      alt="Participating shul logo"
-                      className="max-h-12 w-auto max-w-[140px] object-contain"
-                    />
-                  </div>
+                <div className="flex items-center justify-start">
+                  <img
+                    src={shulLogos[0]}
+                    alt="Participating shul logo"
+                    className="max-h-12 w-auto max-w-[180px] object-contain"
+                  />
                 </div>
               ) : (
                 <div className="relative overflow-hidden">
                   <div className="pointer-events-none absolute inset-y-0 left-0 w-10 bg-gradient-to-r from-navy to-transparent" />
                   <div className="pointer-events-none absolute inset-y-0 right-0 w-10 bg-gradient-to-l from-navy to-transparent" />
-                  <div className="flex min-w-max animate-[marquee_30s_linear_infinite] items-center gap-4 sm:gap-6">
+                  <div className="flex min-w-max animate-[marquee_30s_linear_infinite] items-center justify-start gap-4 sm:gap-6">
                     {[...shulLogos, ...shulLogos].map((src, index) => (
-                      <div
-                        key={`${src}-${index}`}
-                        className="flex items-center justify-center rounded-xl border border-cream/20 bg-white/5 px-4 py-3 shadow-sm backdrop-blur-sm"
-                      >
+                      <div key={`${src}-${index}`} className="flex items-center justify-start">
                         <img
                           src={src}
                           alt={`Participating shul logo ${index + 1}`}
-                          className="max-h-12 w-auto max-w-[140px] object-contain"
+                          className="max-h-12 w-auto max-w-[180px] object-contain"
                         />
                       </div>
                     ))}

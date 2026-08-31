@@ -68,7 +68,7 @@ export default function JoinNudge({
           ) : (
             <>
               <span className="hidden sm:block text-cream/85 text-sm flex-1">
-                One small thing for Shabbos. Join your family in the campaign.
+                One small thing for Shabbos. Be part of the campaign!
               </span>
               <Link
                 href="/signup"

@@ -389,12 +389,6 @@ export default async function Home() {
       {/* What your signup gives */}
       <section className="bg-navy text-cream">
         <div className="mx-auto max-w-3xl px-4 py-12">
-          <h2 className="font-display text-3xl mb-2 text-center">
-            Every family that joins, gives.
-          </h2>
-          <p className="text-cream/70 text-center mb-8">
-            Your commitment does more than build your own Shabbos.
-          </p>
           <div className="flex justify-center">
             <div className="rounded-xl border border-gold/50 bg-navy-soft/40 p-5 text-center">
               <div className="text-4xl mb-1">🍕</div>

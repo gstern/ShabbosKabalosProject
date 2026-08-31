@@ -186,7 +186,7 @@ export async function runCheckinReminders(): Promise<ReminderRunResult> {
       wave === 1
         ? [
             `✨ Gut voch! How did week ${week} go?`,
-            `Check in for ${names} — every check-in grows your streak and the whole shul's numbers.`,
+            `Check in for ${names} — every check-in grows your streak and the whole community's numbers.`,
             isLastWeek ? "" : `Your commitment carries into next Shabbos too — keep it going!`,
             link,
           ]
@@ -194,7 +194,7 @@ export async function runCheckinReminders(): Promise<ReminderRunResult> {
             .join("\n")
         : [
             `👋 Quick nudge — ${names} ${pending.length === 1 ? "hasn't" : "haven't"} checked in yet for Shabbos week ${week}.`,
-            `It takes 10 seconds, and late check-ins still count toward the shul-wide totals:`,
+            `It takes 10 seconds, and late check-ins still count toward the community-wide totals:`,
             link,
           ].join("\n");
     const subject =

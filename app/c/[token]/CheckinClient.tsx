@@ -245,7 +245,7 @@ export default function CheckinClient({
 
           {celebrating[m.memberId] && (
             <div className="mb-4 rounded-lg bg-gold-pale border border-gold/40 px-4 py-3 text-navy-deep text-sm">
-              🎉 <strong>Beautiful!</strong> The shul-wide count just went up —
+              🎉 <strong>Beautiful!</strong> The community-wide count just went up —
               same commitment again next Shabbos. Keep the streak going!
             </div>
           )}
@@ -257,7 +257,7 @@ export default function CheckinClient({
               </p>
               <p className="text-xs text-ink-soft mb-3">
                 {m.pending.late
-                  ? "The streak window has closed — but check in anyway, it still counts toward the shul-wide totals."
+                  ? "The streak window has closed — but check in anyway, it still counts toward the community-wide totals."
                   : "Check in by Monday night to keep the streak."}
               </p>
               <div className="space-y-2">

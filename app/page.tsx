@@ -287,7 +287,7 @@ export default async function Home() {
               {
                 n: "3",
                 title: "Check in & keep going",
-                body: "Tap “I did it,” watch the shul-wide numbers climb, and pick your commitment for next week — same thing, or something new.",
+                body: "Tap “I did it,” watch the community-wide numbers climb, and pick your commitment for next week — same thing, or something new.",
               },
             ].map((s) => (
               <li key={s.n} className="bg-white rounded-xl border border-parchment p-6">

@@ -93,7 +93,7 @@ export default async function AdminPage() {
     `✨ *Gut voch, ${shul.name}!*`,
     ``,
     doneWeek >= 1
-      ? `How did week ${doneWeek} go? Take 10 seconds to check in — keep your family's streak alive and move the whole shul's numbers:`
+      ? `How did week ${doneWeek} go? Take 10 seconds to check in — keep your family's streak alive and move the whole community's numbers:`
       : `The campaign is about to begin — sign up now and pick your first commitment:`,
     `${shul.siteUrl}/find`,
     ``,

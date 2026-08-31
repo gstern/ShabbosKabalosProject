@@ -394,7 +394,7 @@ export default async function Home() {
               <div className="text-4xl mb-1">🍕</div>
               <p className="text-cream/85 text-sm leading-relaxed">
                 <strong className="text-gold-soft">Weekly pizza raffle</strong> —
-                every family where <em>everyone</em> checks in is entered to win
+                every family where <em>everyone</em> who checks in is entered to win
                 pizza on Motzei Shabbos
               </p>
             </div>

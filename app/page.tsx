@@ -77,7 +77,7 @@ export default async function Home() {
             )}
           </div>
           <p className="text-gold-soft font-display tracking-widest uppercase text-sm mb-4">
-            A campaign of {shul.name}
+            A Chicago community-wide campaign
             {shul.partnerName ? ` & ${shul.partnerName}` : ""}
           </p>
           <h1 className="font-display text-4xl sm:text-5xl leading-tight mb-6">

@@ -12,7 +12,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "The Chicago Shabbos Project",
     description:
-      "One small thing for Shabbos, for one full month. Men, women & children — sign up, get a weekly reminder, and watch the whole shul's numbers grow.",
+      "One small thing for Shabbos, for one full month. Men, women & children — sign up, get a weekly reminder, and watch the community's numbers grow.",
     url: shul.siteUrl,
     siteName: "The Chicago Shabbos Project",
   },

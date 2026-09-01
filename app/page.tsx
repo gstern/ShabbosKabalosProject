@@ -392,7 +392,7 @@ export default async function Home() {
             <div className="rounded-xl border border-gold/50 bg-navy-soft/40 p-5 text-center">
               <div className="text-4xl mb-1">📖</div>
               <p className="text-cream/85 text-sm leading-relaxed">
-                <strong className="text-gold-soft">Weekly $100 Gift card raffle</strong> —
+                <strong className="text-gold-soft">Weekly $100 Gift Card Raffle</strong> —
                 every family where <em>everyone</em> checks in is entered to win
                 a $100 gift card to Z Berman Chicago
               </p>

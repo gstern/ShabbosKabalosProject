@@ -77,9 +77,9 @@ export default async function Home() {
       {/* Hero */}
       <section className="bg-navy text-cream relative overflow-hidden">
         <div className="glow-dot absolute -top-24 right-0 h-96 w-96 rounded-full" />
-        <div className="mx-auto max-w-3xl px-4 py-16 sm:py-20 relative">
+        <div className="mx-auto max-w-3xl px-4 py-12 sm:py-16 relative">
           <div className="mb-6 flex items-center gap-5">
-            <LogoOnDark className="h-20 w-auto" />
+            <LogoOnDark className="h-22 w-auto" />
             {shul.partnerName && (
               <>
                 <span className="h-12 w-px bg-cream/25" aria-hidden />

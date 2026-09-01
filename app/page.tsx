@@ -196,17 +196,16 @@ export default async function Home() {
         </section>
       )}
 
-      {/* Pizza raffle winner */}
+      {/* Raffle winner */}
       {latestDraw && (
         <section className="mx-auto max-w-3xl px-4 pt-10">
           <div className="bg-white rounded-2xl border border-gold/40 shadow-sm px-6 py-5 text-center">
             <p className="text-navy">
-              🍕 <span className="font-semibold">Week {latestDraw.week} pizza
-              raffle:</span> mazel tov to{" "}
+              📖 <span className="font-semibold">Week {latestDraw.week} raffle:</span> mazel tov to{" "}
               <span className="font-display text-lg text-navy-deep font-semibold">
                 The {latestDraw.familyName} Family
               </span>
-              ! Everyone checked in — pizza&rsquo;s on the campaign. Your family
+              ! Everyone checked in — they&rsquo;ve won a $100 gift card to Z Berman Chicago. Your family
               could be next: check in after Shabbos, all of you.
             </p>
           </div>
@@ -391,11 +390,11 @@ export default async function Home() {
         <div className="mx-auto max-w-3xl px-4 py-12">
           <div className="flex justify-center">
             <div className="rounded-xl border border-gold/50 bg-navy-soft/40 p-5 text-center">
-              <div className="text-4xl mb-1">🍕</div>
+              <div className="text-4xl mb-1">📖</div>
               <p className="text-cream/85 text-sm leading-relaxed">
-                <strong className="text-gold-soft">Weekly pizza raffle</strong> —
+                <strong className="text-gold-soft">Weekly $100 Gift card raffle</strong> —
                 every family where <em>everyone</em> checks in is entered to win
-                pizza on Motzei Shabbos
+                a $100 gift card to Z Berman Chicago
               </p>
             </div>
           </div>

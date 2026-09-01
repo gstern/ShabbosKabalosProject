@@ -8,7 +8,7 @@ live in about 45 minutes, for **$0/month** on free tiers.
 **What your community gets:** family signup (adults & children, multiple
 commitments each), automatic Thursday + Motzei Shabbos email reminders with
 personal check-in links, streaks, a public "who's joined" wall, a live
-shul-wide dashboard, a weekly pizza-raffle tool, and an admin page for it all.
+shul-wide dashboard, a weekly raffle tool, and an admin page for it all.
 
 **What you need:** a free GitHub account, a free Vercel account, a free Neon
 account, a free Resend account, and a domain (~$12/year — the only real cost;
@@ -115,7 +115,7 @@ implied by the cron schedule — see note below) deploy automatically from
 
 - **Thursday & Sunday/Tuesday:** reminder emails go out automatically.
 - **Motzei Shabbos:** paste the ready-made WhatsApp blast from `/admin`.
-- **Monday night or later:** draw the 🍕 pizza raffle in `/admin` and paste
+- **Monday night or later:** draw the 📖 raffle in `/admin` and paste
   the winner announcement.
 - Watch the homepage numbers climb. That's it.
 

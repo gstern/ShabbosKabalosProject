@@ -1,4 +1,4 @@
--- Pizza raffle: run this once in the Neon SQL Editor.
+-- Raffle: run this once in the Neon SQL Editor.
 -- Stores one winner per campaign week, drawn from the admin page.
 
 CREATE TABLE IF NOT EXISTS "RaffleDraw" (

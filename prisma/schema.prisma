@@ -94,7 +94,7 @@ model Campaign {
   charityName   String   @default("Tomchei Shabbos")
 }
 
-// One pizza-raffle winner per campaign week, drawn (in admin) from the
+// One raffle winner per campaign week, drawn (in admin) from the
 // families where everyone checked in.
 model RaffleDraw {
   id          String   @id @default(cuid())

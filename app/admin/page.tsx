@@ -97,10 +97,10 @@ export default async function AdminPage() {
       : `The campaign is about to begin — sign up now and pick your first commitment:`,
     `${shul.siteUrl}/find`,
     ``,
-    `🍕 Every family where *everyone* checks in is entered into this week's pizza raffle!`,
+    `📖 Every family where *everyone* checks in is entered into this week's raffle!`,
   ].join("\n");
 
-  // Pizza raffle: one draw per week whose Shabbos has passed.
+  // Raffle: one draw per week whose Shabbos has passed.
   const draws = await raffleDraws();
   const raffleWeeks = await Promise.all(
     Array.from({ length: doneWeek }, (_, i) => i + 1).map(async (w) => ({
@@ -113,9 +113,9 @@ export default async function AdminPage() {
   const latestWin = draws.find((d) => d.week === doneWeek);
   const winnerBlast = latestWin
     ? [
-        `🍕 *Pizza raffle — week ${latestWin.week}!*`,
+        `📖 *Raffle winner — week ${latestWin.week}!*`,
         ``,
-        `Mazel tov to *The ${latestWin.familyName} Family* — everyone checked in, and they've won this week's family pizza party! 🎉`,
+        `Mazel tov to *The ${latestWin.familyName} Family* — everyone checked in, and they've won a $100 gift card to Z Berman Chicago! 🎉`,
         ``,
         `Want in next week? Everyone in the family checks in after Shabbos, and you're automatically entered:`,
         shul.siteUrl,
@@ -198,7 +198,7 @@ export default async function AdminPage() {
             name="deadlineText"
             rows={2}
             className="w-full rounded-lg border border-parchment bg-cream px-3 py-2 text-sm"
-            defaultValue="The raffle for the Motzei Shabbos pizza party is tomorrow at 5pm — you must be checked in to qualify!"
+            defaultValue="The raffle for the $100 Z Berman Chicago gift card is tomorrow at 5pm — you must be checked in to qualify!"
           />
           <button className={btnCls}>Send reminder now</button>
         </form>
@@ -239,9 +239,9 @@ export default async function AdminPage() {
         </div>
       </section>
 
-      {/* Pizza raffle */}
+      {/* Gift card raffle */}
       <section className="bg-white rounded-xl border border-parchment p-5">
-        <h2 className="font-semibold text-navy mb-1">🍕 Pizza raffle</h2>
+        <h2 className="font-semibold text-navy mb-1">📖 $100 Gift card raffle</h2>
         <p className="text-sm text-ink-soft mb-4">
           One winner per week, drawn from the families where{" "}
           <strong>everyone</strong> checked in for that Shabbos (late check-ins

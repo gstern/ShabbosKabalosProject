@@ -8,7 +8,7 @@ export type EligibleFamily = {
 };
 
 /**
- * Families eligible for a week's pizza raffle: every member who has
+ * Families eligible for a week's raffle: every member who has
  * commitments for that week has checked in on ALL of them (late check-ins
  * count — the raffle rewards doing it and reporting, not the streak window).
  * Members who joined after that week (no goals for it) don't block the family.

@@ -272,7 +272,7 @@ export async function runRaffleDeadlineReminder(
 
     const channel = await sendToHousehold(
       h,
-      { subject: `Don't forget to check in — pizza raffle deadline`, text },
+      { subject: `Don't forget to check in — raffle deadline`, text },
       kind,
       week
     );

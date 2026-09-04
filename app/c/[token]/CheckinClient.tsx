@@ -71,7 +71,7 @@ function AddPicker({
   return (
     <div>
       <p className="text-sm text-ink-soft mb-2">
-        Commitments are for keeps through Shabbos Shuva — you can{" "}
+        Commitments are for keeps through Shmini Atzeres — you can{" "}
         <span className="font-medium text-navy">add</span> more, but not remove.
         Pick what to add:
       </p>

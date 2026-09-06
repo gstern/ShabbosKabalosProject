@@ -237,7 +237,7 @@ export default async function Home() {
             </p>
             <p>
               So this Elul we are doing our part, every man, woman, and child
-              of STMY, to send Shabbos into the new year as our
+              of the Chicago Jewish Community, to send Shabbos into the new year as our
               advocate. One small commitment, each week, together.
             </p>
           </div>

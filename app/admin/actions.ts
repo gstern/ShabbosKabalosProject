@@ -9,6 +9,8 @@ import {
   runRaffleDeadlineReminder,
 } from "@/lib/reminders";
 import { raffleEligible } from "@/lib/raffle";
+import { getCampaign } from "@/lib/campaign";
+import { sendWelcome, householdsMissingWelcome } from "@/lib/welcome";
 
 export async function loginAction(formData: FormData) {
   const password = String(formData.get("password") ?? "");
@@ -96,6 +98,26 @@ export async function sendThursdayAction() {
 export async function sendCheckinAction() {
   await requireAdmin();
   await runCheckinReminders();
+  revalidatePath("/admin");
+}
+
+/**
+ * Welcome message to every family that never got one (a signup whose send
+ * was cut off). Deduped on MessageLog, so it only reaches the missed ones.
+ */
+export async function sendMissingWelcomesAction() {
+  await requireAdmin();
+  const campaign = await getCampaign();
+  const missing = await householdsMissingWelcome();
+  let sent = 0;
+  for (const h of missing) {
+    try {
+      if (await sendWelcome(h.id, campaign)) sent++;
+    } catch (e) {
+      console.error(`[message:welcome] resend failed for household ${h.id}:`, e);
+    }
+  }
+  console.log(`[message:welcome] resend: ${sent} sent of ${missing.length} missing`);
   revalidatePath("/admin");
 }
 

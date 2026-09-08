@@ -1,16 +1,10 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest, NextResponse, after } from "next/server";
 import { prisma } from "@/lib/db";
-import {
-  getCampaign,
-  activeWeek,
-  shabbosOfWeek,
-  formatShabbosDate,
-  checkinDeadline,
-} from "@/lib/campaign";
+import { getCampaign, activeWeek, checkinDeadline } from "@/lib/campaign";
 import { lastShabbosWeek } from "@/lib/household";
 import { normalizePhone, normalizeEmail } from "@/lib/contact";
 import { isCategory, isChildCategory } from "@/lib/categories";
-import { sendToHousehold } from "@/lib/messaging";
+import { sendWelcome } from "@/lib/welcome";
 
 type MemberInput = {
   name?: unknown;
@@ -222,48 +216,18 @@ export async function POST(req: NextRequest) {
   }
 
   // Welcome email with the family's permanent link (first signup only).
-  const welcomed = await prisma.messageLog.findFirst({
-    where: { householdId: household.id, kind: "welcome" },
+  // Runs after the response is sent, but inside `after()` so the serverless
+  // function stays alive until the send and its MessageLog write finish. A
+  // bare fire-and-forget promise here gets frozen with the function on
+  // Vercel and dies mid-flight (ECONNRESET / ETIMEDOUT to Resend, "can't
+  // reach database server" on the log write) for a large share of signups.
+  after(async () => {
+    try {
+      await sendWelcome(household.id, campaign, week);
+    } catch (e) {
+      console.error(`[message:welcome] failed for household ${household.id}:`, e);
+    }
   });
-  if (!welcomed) {
-    const base = (process.env.NEXT_PUBLIC_BASE_URL ?? "http://localhost:3000").replace(/\/$/, "");
-    const link = `${base}/c/${household.token}`;
-    const memberGoals = await prisma.member.findMany({
-      where: { householdId: household.id },
-      include: { goals: { where: { week }, include: { suggestion: true } } },
-    });
-    const lines = memberGoals
-      .filter((m) => m.goals.length)
-      .map(
-        (m) =>
-          `• ${m.name}: ${m.goals
-            .map((g) => g.suggestion?.title ?? g.customTitle)
-            .filter(Boolean)
-            .join(" + ")}`
-      );
-    const text = [
-      `Welcome to the Chicago Shabbos Project! 🕯️`,
-      ``,
-      `The ${familyName} family has taken on their commitments for the four Shabbosos of the campaign — starting Shabbos ${formatShabbosDate(shabbosOfWeek(campaign, week))}:`,
-      ...lines,
-      ``,
-      `Your family page — there's no password, this link IS your login:`,
-      link,
-      ``,
-      `Lost the link? Tap "Sign in" at ${base.replace(/^https?:\/\//, "")} and enter this email address — that's it.`,
-      ``,
-      `We'll remind you before each Shabbos, and after Shabbos to check in.`,
-      ...(cleanMembers.some((m) => m.category === "boy" || m.category === "girl")
-        ? [``, `P.S. For the children: the Shabbos Helpers Guide, full of jobs worth owning — ${base}/shabbos-helpers-guide.pdf`]
-        : []),
-    ].join("\n");
-    sendToHousehold(
-      household,
-      { subject: `Your family page — The Chicago Shabbos Project`, text },
-      "welcome",
-      week
-    ).catch(() => {});
-  }
 
   return NextResponse.json({ token: household.token });
 }

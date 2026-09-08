@@ -14,7 +14,7 @@ import { getCampaignStats } from "@/lib/stats";
 import { raffleDraws } from "@/lib/raffle";
 import { prisma } from "@/lib/db";
 import { LogoOnDark, LinkLogoOnDark } from "@/components/Logo";
-import { shul, isAdasDeployment } from "@/lib/shul";
+import { shul } from "@/lib/shul";
 import JoinNudge from "@/components/JoinNudge";
 import LinkWelcome from "@/components/LinkWelcome";
 
@@ -51,6 +51,8 @@ export default async function Home() {
   const lastWeek = lastShabbosWeek(campaign);
   const checkinOpen =
     lastWeek >= 1 &&
+    // This page is a dynamic server component; the request-time window is intentional.
+    // eslint-disable-next-line react-hooks/purity
     Date.now() - shabbosOfWeek(campaign, lastWeek).getTime() <= 8 * DAY_MS;
   const lastLabel = lastWeek >= 1 ? formatShabbosDate(shabbosOfWeek(campaign, lastWeek)) : "";
 
@@ -303,7 +305,7 @@ export default async function Home() {
             href="/families"
             className="inline-block border border-navy/30 text-navy font-semibold rounded-lg px-8 py-3.5 hover:border-gold hover:text-navy-deep transition-colors"
           >
-            🏅 See who's joined
+            🏅 See who&apos;s joined
           </Link>
         </div>
       </section>

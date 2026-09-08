@@ -25,8 +25,10 @@ import {
   sendThursdayAction,
   sendCheckinAction,
   sendRaffleDeadlineAction,
+  sendMissingWelcomesAction,
   drawRaffleAction,
 } from "./actions";
+import { householdsMissingWelcome } from "@/lib/welcome";
 
 export const dynamic = "force-dynamic";
 // Give the reminder-blast server actions room to finish a full send.
@@ -72,6 +74,7 @@ export default async function AdminPage() {
     },
     orderBy: { createdAt: "desc" },
   });
+  const missingWelcome = await householdsMissingWelcome();
   const messageCounts = await prisma.messageLog.groupBy({
     by: ["kind", "week"],
     _count: { _all: true },
@@ -172,6 +175,34 @@ export default async function AdminPage() {
           <a href="/api/admin/export" className={btnCls + " inline-block"}>
             Export CSV
           </a>
+        </div>
+        <div className="rounded-lg border border-parchment bg-cream/50 p-4 mb-4">
+          <p className="text-sm text-navy font-medium mb-1">
+            Welcome emails{" "}
+            {missingWelcome.length > 0 ? (
+              <span className="ml-1 text-xs bg-gold-pale text-navy-deep rounded-full px-2.5 py-0.5">
+                {missingWelcome.length} {missingWelcome.length === 1 ? "family" : "families"} never got one
+              </span>
+            ) : (
+              <span className="ml-1 text-xs text-ink-soft">every family has one</span>
+            )}
+          </p>
+          <p className="text-xs text-ink-soft mb-3">
+            Each family gets one welcome message with their link when they sign up.
+            This sends it to any family that has no record of one — a family whose
+            email went out but whose record was lost would get it a second time,
+            which is harmless.
+          </p>
+          {missingWelcome.length > 0 && (
+            <form action={sendMissingWelcomesAction}>
+              <ConfirmSubmit
+                message={`Send the welcome message to ${missingWelcome.length} ${missingWelcome.length === 1 ? "family" : "families"} now?`}
+                className={btnCls}
+              >
+                Send missing welcome emails
+              </ConfirmSubmit>
+            </form>
+          )}
         </div>
         {messageCounts.length > 0 && (
           <p className="text-xs text-ink-soft">

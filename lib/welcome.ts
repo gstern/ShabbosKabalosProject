@@ -50,7 +50,7 @@ export async function sendWelcome(
   const text = [
     `Welcome to the Chicago Shabbos Project! 🕯️`,
     ``,
-    `The ${familyName} family has taken on their commitments for the four Shabbosos of the campaign — starting Shabbos ${formatShabbosDate(shabbosOfWeek(campaign, startWeek))}, through Shabbos Shuva:`,
+    `The ${familyName} family has taken on their commitments for the four Shabbosos of the campaign — starting Shabbos ${formatShabbosDate(shabbosOfWeek(campaign, startWeek))}, through Shmini Atzeres:`,
     ...lines,
     ``,
     `Your family page — there's no password, this link IS your login:`,

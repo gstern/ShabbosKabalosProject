@@ -160,7 +160,7 @@ export default async function AdminPage() {
         <h2 className="font-semibold text-navy mb-3">Reminders</h2>
         <p className="text-sm text-ink-soft mb-4">
           Crons run automatically: Thursday 9am (pre-Shabbos), and check-in
-          chasers Sunday &amp; Tuesday 9am — families who haven&rsquo;t checked
+          chasers Sunday 9pm &amp; Tuesday 9am — families who haven&rsquo;t checked
           in keep hearing from us every ~2 days until the window closes. These
           buttons trigger the same runs by hand — already-sent households are
           skipped, so it&rsquo;s safe to press twice.

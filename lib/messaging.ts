@@ -7,6 +7,32 @@ export type OutboundMessage = {
 
 type Channel = "whatsapp" | "sms" | "email" | "console";
 
+const RESEND_MIN_INTERVAL_MS = 150;
+const RESEND_MAX_RETRIES = 3;
+let resendQueue = Promise.resolve();
+let lastResendRequestAt = 0;
+
+function wait(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+async function runResendRequest<T>(request: () => Promise<T>): Promise<T> {
+  const queuedRequest = resendQueue.then(async () => {
+    const elapsed = Date.now() - lastResendRequestAt;
+    if (elapsed < RESEND_MIN_INTERVAL_MS) {
+      await wait(RESEND_MIN_INTERVAL_MS - elapsed);
+    }
+    lastResendRequestAt = Date.now();
+    return request();
+  });
+
+  resendQueue = queuedRequest.then(
+    () => undefined,
+    () => undefined
+  );
+  return queuedRequest;
+}
+
 function twilioConfigured() {
   return !!(
     process.env.TWILIO_ACCOUNT_SID &&
@@ -41,23 +67,35 @@ async function sendTwilio(to: string, body: string, whatsapp: boolean): Promise<
 }
 
 async function sendResend(to: string[], subject: string, text: string): Promise<void> {
-  const res = await fetch("https://api.resend.com/emails", {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      from: process.env.EMAIL_FROM ?? "Shabbos Project <onboarding@resend.dev>",
-      to,
-      subject,
-      text,
-      ...(process.env.EMAIL_REPLY_TO ? { reply_to: process.env.EMAIL_REPLY_TO } : {}),
-    }),
-  });
-  if (!res.ok) {
+  for (let attempt = 0; attempt <= RESEND_MAX_RETRIES; attempt++) {
+    const res = await runResendRequest(() =>
+      fetch("https://api.resend.com/emails", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          from: process.env.EMAIL_FROM ?? "Shabbos Project <onboarding@resend.dev>",
+          to,
+          subject,
+          text,
+          ...(process.env.EMAIL_REPLY_TO ? { reply_to: process.env.EMAIL_REPLY_TO } : {}),
+        }),
+      })
+    );
+    if (res.ok) return;
+
     const detail = await res.text().catch(() => "");
-    throw new Error(`Resend ${res.status}: ${detail.slice(0, 300)}`);
+    if (res.status !== 429 || attempt === RESEND_MAX_RETRIES) {
+      throw new Error(`Resend ${res.status}: ${detail.slice(0, 300)}`);
+    }
+
+    const retryAfter = Number(res.headers.get("retry-after"));
+    const delayMs = Number.isFinite(retryAfter) && retryAfter > 0
+      ? retryAfter * 1000
+      : 500 * 2 ** attempt;
+    await wait(delayMs);
   }
 }
 

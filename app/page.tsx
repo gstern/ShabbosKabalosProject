@@ -1,5 +1,4 @@
 import Link from "next/link";
-import Image from "next/image";
 import { readdir } from "fs/promises";
 import path from "path";
 import { cookies } from "next/headers";
@@ -152,11 +151,9 @@ export default async function Home() {
             <div className="mt-3">
               {shulLogos.length === 1 ? (
                 <div className="flex items-center justify-start">
-                  <Image
+                  <img
                     src={shulLogos[0]}
                     alt="Participating shul logo"
-                    width={180}
-                    height={48}
                     className="max-h-12 w-auto max-w-[180px] object-contain"
                   />
                 </div>
@@ -167,11 +164,9 @@ export default async function Home() {
                   <div className="flex min-w-max animate-[marquee_30s_linear_infinite] items-center justify-start gap-4 sm:gap-6">
                     {[...shulLogos, ...shulLogos].map((src, index) => (
                       <div key={`${src}-${index}`} className="flex items-center justify-start">
-                        <Image
+                        <img
                           src={src}
                           alt={`Participating shul logo ${index + 1}`}
-                          width={180}
-                          height={48}
                           className="max-h-12 w-auto max-w-[180px] object-contain"
                         />
                       </div>

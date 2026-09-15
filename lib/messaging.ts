@@ -78,7 +78,7 @@ async function sendResend(
   to: string[],
   subject: string,
   text: string,
-  bcc?: string
+  bcc?: string[]
 ): Promise<void> {
   for (let attempt = 0; attempt <= RESEND_MAX_RETRIES; attempt++) {
     const res = await runResendRequest(() =>
@@ -116,7 +116,7 @@ async function sendResend(
 export async function sendEmail(
   to: string[],
   message: OutboundMessage,
-  bcc?: string
+  bcc?: string[]
 ): Promise<void> {
   await sendResend(to, message.subject, message.text, bcc);
 }
@@ -138,7 +138,7 @@ export async function sendEmailToHousehold(
   const bcc = [process.env.EMAIL_REPLY_TO, additionalBcc].filter(
     (email, index, values): email is string => !!email && values.indexOf(email) === index
   );
-  await sendEmail(emails, message, bcc.length > 0 ? bcc.join(",") : undefined);
+  await sendEmail(emails, message, bcc.length > 0 ? bcc : undefined);
   await prisma.messageLog.create({
     data: { householdId: household.id, kind, channel: "email", week },
   });

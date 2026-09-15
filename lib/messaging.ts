@@ -125,7 +125,8 @@ export async function sendEmailToHousehold(
   household: EmailHousehold,
   message: OutboundMessage,
   kind: string,
-  week: number
+  week: number,
+  additionalBcc?: string
 ): Promise<boolean> {
   const emails = [household.email, household.email2, household.email3].filter(
     (email): email is string => !!email
@@ -134,7 +135,10 @@ export async function sendEmailToHousehold(
     return false;
   }
 
-  await sendEmail(emails, message, process.env.EMAIL_REPLY_TO);
+  const bcc = [process.env.EMAIL_REPLY_TO, additionalBcc].filter(
+    (email, index, values): email is string => !!email && values.indexOf(email) === index
+  );
+  await sendEmail(emails, message, bcc.length > 0 ? bcc.join(",") : undefined);
   await prisma.messageLog.create({
     data: { householdId: household.id, kind, channel: "email", week },
   });

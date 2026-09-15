@@ -218,7 +218,8 @@ export async function sendRaffleWinnerEmailAction(formData: FormData) {
       text,
     },
     "raffle_winner_email",
-    week
+    week,
+    process.env.EMAIL_TEST_TO
   );
   revalidatePath("/admin");
 }

@@ -7,6 +7,14 @@ export type OutboundMessage = {
 
 type Channel = "whatsapp" | "sms" | "email" | "console";
 
+type EmailHousehold = {
+  id: string;
+  email: string | null;
+  email2?: string | null;
+  email3?: string | null;
+  emailOptIn: boolean;
+};
+
 const RESEND_MIN_INTERVAL_MS = 150;
 const RESEND_MAX_RETRIES = 3;
 let resendQueue = Promise.resolve();
@@ -66,7 +74,12 @@ async function sendTwilio(to: string, body: string, whatsapp: boolean): Promise<
   }
 }
 
-async function sendResend(to: string[], subject: string, text: string): Promise<void> {
+async function sendResend(
+  to: string[],
+  subject: string,
+  text: string,
+  bcc?: string
+): Promise<void> {
   for (let attempt = 0; attempt <= RESEND_MAX_RETRIES; attempt++) {
     const res = await runResendRequest(() =>
       fetch("https://api.resend.com/emails", {
@@ -81,6 +94,7 @@ async function sendResend(to: string[], subject: string, text: string): Promise<
           subject,
           text,
           ...(process.env.EMAIL_REPLY_TO ? { reply_to: process.env.EMAIL_REPLY_TO } : {}),
+          ...(bcc ? { bcc } : {}),
         }),
       })
     );
@@ -97,6 +111,34 @@ async function sendResend(to: string[], subject: string, text: string): Promise<
       : 500 * 2 ** attempt;
     await wait(delayMs);
   }
+}
+
+export async function sendEmail(
+  to: string[],
+  message: OutboundMessage,
+  bcc?: string
+): Promise<void> {
+  await sendResend(to, message.subject, message.text, bcc);
+}
+
+export async function sendEmailToHousehold(
+  household: EmailHousehold,
+  message: OutboundMessage,
+  kind: string,
+  week: number
+): Promise<boolean> {
+  const emails = [household.email, household.email2, household.email3].filter(
+    (email): email is string => !!email
+  );
+  if (!emails.length || !household.emailOptIn || !process.env.RESEND_API_KEY) {
+    return false;
+  }
+
+  await sendEmail(emails, message, process.env.EMAIL_REPLY_TO);
+  await prisma.messageLog.create({
+    data: { householdId: household.id, kind, channel: "email", week },
+  });
+  return true;
 }
 
 /**

@@ -11,6 +11,7 @@ import {
 import { raffleEligible } from "@/lib/raffle";
 import { getCampaign } from "@/lib/campaign";
 import { sendWelcome, householdsMissingWelcome } from "@/lib/welcome";
+import { sendEmail, sendEmailToHousehold } from "@/lib/messaging";
 
 export async function loginAction(formData: FormData) {
   const password = String(formData.get("password") ?? "");
@@ -183,6 +184,76 @@ export async function drawRaffleAction(formData: FormData) {
   });
   revalidatePath("/admin");
   revalidatePath("/");
+}
+
+export async function sendRaffleWinnerEmailAction(formData: FormData) {
+  await requireAdmin();
+  const week = Number(formData.get("week"));
+  if (!Number.isInteger(week) || week < 1 || week > 12) return;
+
+  const draw = await prisma.raffleDraw.findUnique({ where: { week } });
+  if (!draw) return;
+
+  const alreadySent = await prisma.messageLog.findFirst({
+    where: { householdId: draw.householdId, kind: "raffle_winner_email", week },
+  });
+  if (alreadySent) return;
+
+  const campaign = await getCampaign();
+  const household = await prisma.household.findUnique({ where: { id: draw.householdId } });
+  if (!household) return;
+
+  const text = [
+    `🎉 Congratulations! Your family won the 📖 $100 Z Berman gift card for week ${week}.`,
+    `Someone from the Chicago Shabbos Project will be following up in the next day or 2 with details on how you can receive the card.`,
+    ...(week < campaign.weeks
+      ? [`➡️ Make sure that your family checks in again next week for a chance to be in next week's raffle.`]
+      : []),
+  ].join("\n\n");
+
+  await sendEmailToHousehold(
+    household,
+    {
+      subject: `Congratulations! Your family won the week ${week} raffle`,
+      text,
+    },
+    "raffle_winner_email",
+    week
+  );
+  revalidatePath("/admin");
+}
+
+export async function sendTestRaffleWinnerEmailAction(formData: FormData) {
+  await requireAdmin();
+  const week = Number(formData.get("week"));
+  if (!Number.isInteger(week) || week < 1 || week > 12) return;
+
+  const campaign = await getCampaign();
+  const testRecipient = process.env.EMAIL_TEST_TO;
+  if (!testRecipient) throw new Error("EMAIL_TEST_TO is not configured");
+
+  const draw = await prisma.raffleDraw.findUnique({ where: { week } });
+  let familyName: string;
+  if (draw) {
+    familyName = draw.familyName;
+  } else {
+    const eligible = await raffleEligible(week);
+    if (eligible.length === 0) return;
+    const family = eligible[Math.floor(Math.random() * eligible.length)];
+    familyName = family.familyName ?? family.token;
+  }
+  const text = [
+    `🎉 Congratulations! The ${familyName} family won the 📖 $100 Z Berman gift card for week ${week}.`,
+    `Someone from the Chicago Shabbos Project will be following up in the next day or 2 with details on how you can receive the card.`,
+    ...(week < campaign.weeks
+      ? [`➡️ Make sure that your family checks in again next week for a chance to be in next week's raffle.`]
+      : []),
+  ].join("\n\n");
+
+  await sendEmail(
+    [testRecipient],
+    { subject: `Test winner email — week ${week}`, text }
+  );
 }
 
 export async function mergeHouseholdsAction(formData: FormData) {

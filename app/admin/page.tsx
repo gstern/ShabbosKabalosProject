@@ -27,6 +27,8 @@ import {
   sendRaffleDeadlineAction,
   sendMissingWelcomesAction,
   drawRaffleAction,
+  sendRaffleWinnerEmailAction,
+  sendTestRaffleWinnerEmailAction,
 } from "./actions";
 import { householdsMissingWelcome } from "@/lib/welcome";
 
@@ -42,7 +44,7 @@ function laDateInput(d: Date | null): string {
 const inputCls =
   "w-full rounded-lg border border-parchment bg-cream px-3 py-2 text-sm outline-none focus:border-gold";
 const btnCls =
-  "bg-navy text-cream rounded-lg px-4 py-2 text-sm font-medium hover:bg-navy-soft transition-colors";
+  "bg-navy text-cream rounded-lg px-4 py-2 text-sm font-medium hover:bg-navy-soft transition-colors cursor-pointer";
 
 export default async function AdminPage() {
   if (!(await isAdmin())) {
@@ -105,6 +107,14 @@ export default async function AdminPage() {
 
   // Raffle: one draw per week whose Shabbos has passed.
   const draws = await raffleDraws();
+  const winnerEmailSent = new Set(
+    (
+      await prisma.messageLog.findMany({
+        where: { kind: "raffle_winner_email" },
+        select: { householdId: true, week: true },
+      })
+    ).map((log) => `${log.householdId}:${log.week}`)
+  );
   const raffleWeeks = await Promise.all(
     Array.from({ length: doneWeek }, (_, i) => i + 1).map(async (w) => ({
       week: w,
@@ -130,7 +140,7 @@ export default async function AdminPage() {
       <div className="flex items-center justify-between">
         <h1 className="font-display text-3xl text-navy">Campaign admin</h1>
         <form action={logoutAction}>
-          <button className="text-sm text-ink-soft underline hover:text-navy">
+          <button className="text-sm text-ink-soft underline hover:text-navy cursor-pointer">
             Log out
           </button>
         </form>
@@ -312,20 +322,41 @@ export default async function AdminPage() {
                     </>
                   )}
                 </p>
-                {rw.eligible.length > 0 && (
-                  <form action={drawRaffleAction}>
-                    <input type="hidden" name="week" value={rw.week} />
-                    {rw.winner ? (
-                      <ConfirmSubmit
-                        message={`Redraw week ${rw.week}? This replaces The ${rw.winner.familyName} Family as the saved winner.`}
-                        className={btnCls}
-                      >
-                        Redraw winner
-                      </ConfirmSubmit>
-                    ) : (
-                      <button className={btnCls}>🎲 Draw the winner</button>
+                {(rw.winner || rw.eligible.length > 0) && (
+                  <div className="flex flex-wrap gap-3">
+                    {rw.eligible.length > 0 && (
+                      <form action={drawRaffleAction}>
+                        <input type="hidden" name="week" value={rw.week} />
+                        {rw.winner ? (
+                          <ConfirmSubmit
+                            message={`Redraw week ${rw.week}? This replaces The ${rw.winner.familyName} Family as the saved winner.`}
+                            className={btnCls}
+                          >
+                            Redraw winner
+                          </ConfirmSubmit>
+                        ) : (
+                          <button className={btnCls}>🎲 Draw the winner</button>
+                        )}
+                      </form>
                     )}
-                  </form>
+                    {rw.winner && (
+                      <form action={sendRaffleWinnerEmailAction}>
+                        <input type="hidden" name="week" value={rw.week} />
+                        <button className={btnCls}>Send winner email</button>
+                      </form>
+                    )}
+                    <form action={sendTestRaffleWinnerEmailAction}>
+                      <input type="hidden" name="week" value={rw.week} />
+                      <button className={btnCls}>Send test winner email to admin</button>
+                    </form>
+                  </div>
+                )}
+                {rw.winner && (
+                  <p className="mt-2 text-xs text-ink-soft">
+                    {winnerEmailSent.has(`${rw.winner.householdId}:${rw.week}`)
+                      ? "Winner family email has already been sent."
+                      : "Winner family email has not been sent yet."}
+                  </p>
                 )}
               </div>
             ))}
@@ -428,7 +459,7 @@ export default async function AdminPage() {
                           <input type="hidden" name="id" value={m.id} />
                           <ConfirmSubmit
                             message={`Remove ${m.name} and all their check-ins? This cannot be undone.`}
-                            className="text-xs text-red-700/70 hover:text-red-700"
+                            className="text-xs text-red-700/70 hover:text-red-700 cursor-pointer"
                           >
                             ✕
                           </ConfirmSubmit>
@@ -470,7 +501,7 @@ export default async function AdminPage() {
                       <input type="hidden" name="id" value={h.id} />
                       <ConfirmSubmit
                         message={`Delete the ${h.familyName ?? ""} family entirely — every member and check-in? This cannot be undone.`}
-                        className="text-xs text-red-700/70 underline hover:text-red-700"
+                        className="text-xs text-red-700/70 underline hover:text-red-700 cursor-pointer"
                       >
                         delete family
                       </ConfirmSubmit>

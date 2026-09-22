@@ -12,6 +12,7 @@ import { raffleEligible } from "@/lib/raffle";
 import { getCampaign } from "@/lib/campaign";
 import { sendWelcome, householdsMissingWelcome } from "@/lib/welcome";
 import { sendEmail, sendEmailToHousehold } from "@/lib/messaging";
+import { isChildCategory, memberCategory } from "@/lib/categories";
 
 export async function loginAction(formData: FormData) {
   const password = String(formData.get("password") ?? "");
@@ -26,6 +27,42 @@ export async function logoutAction() {
 
 async function requireAdmin() {
   if (!(await isAdmin())) throw new Error("Not authorized");
+}
+
+function firstAdultName(household: {
+  familyName: string | null;
+  token: string;
+  members: Array<{ name: string; gender: string | null; isChild: boolean }>;
+}) {
+  return (
+    household.members.find((member) => !isChildCategory(memberCategory(member)))?.name ??
+    household.members[0]?.name ??
+    "friend"
+  );
+}
+
+function raffleWinnerEmailText(
+  adultName: string,
+  familyName: string,
+  members: Array<{ name: string }>,
+  week: number,
+  campaignWeeks: number
+) {
+  const memberNames = members.map((member) => member.name).filter(Boolean);
+  const memberList = memberNames.length ? `Your family members: ${memberNames.join(", ")}.` : "Your family members:";
+
+  return [
+    `Dear ${adultName},`,
+    ``,
+    `Mazal tov to you and the ${familyName} family! 🎉`,
+    memberList,
+    `Thank you for keeping your commitments and helping make this Shabbos Project so special.`,
+    `Because of that dedication, your family has won the 📖 $100 Z Berman gift card for week ${week}.`,
+    `Someone from the Chicago Shabbos Project will be following up in the next day or 2 with details on how you can receive the card.`,
+    ...(week < campaignWeeks
+      ? [`➡️ Make sure that your family checks in again next week for a chance to be in next week's raffle.`]
+      : []),
+  ].join("\n\n");
 }
 
 export async function saveCampaignAction(formData: FormData) {
@@ -200,21 +237,20 @@ export async function sendRaffleWinnerEmailAction(formData: FormData) {
   if (alreadySent) return;
 
   const campaign = await getCampaign();
-  const household = await prisma.household.findUnique({ where: { id: draw.householdId } });
+  const household = await prisma.household.findUnique({
+    where: { id: draw.householdId },
+    include: { members: true },
+  });
   if (!household) return;
 
-  const text = [
-    `🎉 Congratulations! Your family won the 📖 $100 Z Berman gift card for week ${week}.`,
-    `Someone from the Chicago Shabbos Project will be following up in the next day or 2 with details on how you can receive the card.`,
-    ...(week < campaign.weeks
-      ? [`➡️ Make sure that your family checks in again next week for a chance to be in next week's raffle.`]
-      : []),
-  ].join("\n\n");
+  const adultName = firstAdultName(household);
+  const familyName = household.familyName ?? household.token;
+  const text = raffleWinnerEmailText(adultName, familyName, household.members, week, campaign.weeks);
 
   await sendEmailToHousehold(
     household,
     {
-      subject: `Congratulations! Your family won the week ${week} raffle`,
+      subject: `Congratulations, ${adultName} and the ${familyName} family!`,
       text,
     },
     "raffle_winner_email",
@@ -234,22 +270,36 @@ export async function sendTestRaffleWinnerEmailAction(formData: FormData) {
   if (!testRecipient) throw new Error("EMAIL_TEST_TO is not configured");
 
   const draw = await prisma.raffleDraw.findUnique({ where: { week } });
-  let familyName: string;
+  let adultName = "friend";
+  let familyName = `Family ${week}`;
+  let household: { members: Array<{ name: string }> } | null = null;
   if (draw) {
-    familyName = draw.familyName;
+    household = await prisma.household.findUnique({
+      where: { id: draw.householdId },
+      include: { members: true },
+    });
+    if (household) {
+      adultName = firstAdultName(household);
+      familyName = draw.familyName;
+    }
   } else {
     const eligible = await raffleEligible(week);
     if (eligible.length === 0) return;
     const family = eligible[Math.floor(Math.random() * eligible.length)];
     familyName = family.familyName ?? family.token;
+    household = await prisma.household.findUnique({
+      where: { id: family.id },
+      include: { members: true },
+    });
+    adultName = household ? firstAdultName(household) : "friend";
   }
-  const text = [
-    `🎉 Congratulations! The ${familyName} family won the 📖 $100 Z Berman gift card for week ${week}.`,
-    `Someone from the Chicago Shabbos Project will be following up in the next day or 2 with details on how you can receive the card.`,
-    ...(week < campaign.weeks
-      ? [`➡️ Make sure that your family checks in again next week for a chance to be in next week's raffle.`]
-      : []),
-  ].join("\n\n");
+  const text = raffleWinnerEmailText(
+    adultName,
+    familyName,
+    household?.members ?? [],
+    week,
+    campaign.weeks
+  );
 
   await sendEmail(
     [testRecipient],

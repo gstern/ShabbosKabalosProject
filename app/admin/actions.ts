@@ -48,15 +48,19 @@ function raffleWinnerEmailText(
   week: number,
   campaignWeeks: number
 ) {
-  const memberNames = members.map((member) => member.name).filter(Boolean);
-  const memberList = memberNames.length ? `Your family members: ${memberNames.join(", ")}.` : "Your family members:";
+  const firstNames = members
+    .map((member) => member.name.trim())
+    .filter(Boolean)
+    .map((name) => name.split(/\s+/)[0]);
+  const memberThankYou = firstNames.length
+    ? `Thank you to ${firstNames.join(", ")} for keeping your commitments and helping make this Shabbos Project so special.`
+    : "Thank you for keeping your commitments and helping make this Shabbos Project so special.";
 
   return [
     `Dear ${adultName},`,
     ``,
     `Mazal tov to you and the ${familyName} family! 🎉`,
-    memberList,
-    `Thank you for keeping your commitments and helping make this Shabbos Project so special.`,
+    memberThankYou,
     `Because of that dedication, your family has won the 📖 $100 Z Berman gift card for week ${week}.`,
     `Someone from the Chicago Shabbos Project will be following up in the next day or 2 with details on how you can receive the card.`,
     ...(week < campaignWeeks

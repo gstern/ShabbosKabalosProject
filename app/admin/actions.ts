@@ -272,7 +272,9 @@ export async function sendTestRaffleWinnerEmailAction(formData: FormData) {
   const draw = await prisma.raffleDraw.findUnique({ where: { week } });
   let adultName = "friend";
   let familyName = `Family ${week}`;
-  let household: { members: Array<{ name: string }> } | null = null;
+  let household:
+    | ({ familyName: string | null; token: string; members: Array<{ name: string; gender: string | null; isChild: boolean }> })
+    | null = null;
   if (draw) {
     household = await prisma.household.findUnique({
       where: { id: draw.householdId },

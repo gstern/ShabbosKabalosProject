@@ -7,6 +7,7 @@ import {
   runThursdayReminders,
   runCheckinReminders,
   runRaffleDeadlineReminder,
+  runRaffleWinnerAutomation,
 } from "@/lib/reminders";
 import { raffleEligible } from "@/lib/raffle";
 import { getCampaign } from "@/lib/campaign";
@@ -232,35 +233,7 @@ export async function sendRaffleWinnerEmailAction(formData: FormData) {
   const week = Number(formData.get("week"));
   if (!Number.isInteger(week) || week < 1 || week > 12) return;
 
-  const draw = await prisma.raffleDraw.findUnique({ where: { week } });
-  if (!draw) return;
-
-  const alreadySent = await prisma.messageLog.findFirst({
-    where: { householdId: draw.householdId, kind: "raffle_winner_email", week },
-  });
-  if (alreadySent) return;
-
-  const campaign = await getCampaign();
-  const household = await prisma.household.findUnique({
-    where: { id: draw.householdId },
-    include: { members: true },
-  });
-  if (!household) return;
-
-  const adultName = firstAdultName(household);
-  const familyName = household.familyName ?? household.token;
-  const text = raffleWinnerEmailText(adultName, familyName, household.members, week, campaign.weeks);
-
-  await sendEmailToHousehold(
-    household,
-    {
-      subject: `Congratulations, ${adultName} and the ${familyName} family!`,
-      text,
-    },
-    "raffle_winner_email",
-    week,
-    process.env.EMAIL_TEST_TO
-  );
+  await runRaffleWinnerAutomation(week);
   revalidatePath("/admin");
 }
 

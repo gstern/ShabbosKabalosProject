@@ -5,10 +5,52 @@ import {
   formatShabbosDate,
 } from "@/lib/campaign";
 import { lastShabbosWeek, nextShabbosWeek, goalTitle } from "@/lib/household";
-import { sendToHousehold } from "@/lib/messaging";
+import { sendEmailToHousehold, sendToHousehold } from "@/lib/messaging";
+import { isChildCategory, memberCategory } from "@/lib/categories";
+import { raffleEligible } from "@/lib/raffle";
 
 function baseUrl() {
   return (process.env.NEXT_PUBLIC_BASE_URL ?? "http://localhost:3000").replace(/\/$/, "");
+}
+
+function firstAdultName(household: {
+  familyName: string | null;
+  token: string;
+  members: Array<{ name: string; gender: string | null; isChild: boolean }>;
+}) {
+  return (
+    household.members.find((member) => !isChildCategory(memberCategory(member)))?.name ??
+    household.members[0]?.name ??
+    "friend"
+  );
+}
+
+function raffleWinnerEmailText(
+  adultName: string,
+  familyName: string,
+  members: Array<{ name: string }>,
+  week: number,
+  campaignWeeks: number
+) {
+  const firstNames = members
+    .map((member) => member.name.trim())
+    .filter(Boolean)
+    .map((name) => name.split(/\s+/)[0]);
+  const memberThankYou = firstNames.length
+    ? `Thank you to ${firstNames.join(", ")} for keeping your commitments and helping make this Shabbos Project so special.`
+    : "Thank you for keeping your commitments and helping make this Shabbos Project so special.";
+
+  return [
+    `Dear ${adultName},`,
+    ``,
+    `Mazal tov to you and the ${familyName} family! 🎉`,
+    memberThankYou,
+    `Because of that dedication, your family has won the 📖 $100 Z Berman gift card for week ${week}.`,
+    `Someone from the Chicago Shabbos Project will be following up in the next day or 2 with details on how you can receive the card.`,
+    ...(week < campaignWeeks
+      ? [`➡️ Make sure that your family checks in again next week for a chance to be in next week's raffle.`]
+      : []),
+  ].join("\n\n");
 }
 
 const DAY_MS = 24 * 60 * 60 * 1000;
@@ -283,4 +325,94 @@ export async function runRaffleDeadlineReminder(
   });
 
   return { week, sent, skipped, details };
+}
+
+export async function runRaffleWinnerAutomation(week: number) {
+  const campaign = await getCampaign();
+  const draw = await prisma.raffleDraw.findUnique({ where: { week } });
+
+  if (!draw) {
+    const eligible = await raffleEligible(week);
+    if (eligible.length === 0) {
+      return { week, drew: false, emailSent: false };
+    }
+    const winner = eligible[Math.floor(Math.random() * eligible.length)];
+    await prisma.raffleDraw.upsert({
+      where: { week },
+      update: {
+        householdId: winner.id,
+        familyName: winner.familyName ?? winner.token,
+        drawnAt: new Date(),
+      },
+      create: {
+        week,
+        householdId: winner.id,
+        familyName: winner.familyName ?? winner.token,
+      },
+    });
+  }
+
+  const finalDraw = await prisma.raffleDraw.findUnique({ where: { week } });
+  if (!finalDraw) {
+    return { week, drew: false, emailSent: false };
+  }
+
+  const alreadySent = await prisma.messageLog.findFirst({
+    where: { householdId: finalDraw.householdId, kind: "raffle_winner_email", week },
+  });
+  if (alreadySent) {
+    return { week, drew: true, emailSent: true };
+  }
+
+  const household = await prisma.household.findUnique({
+    where: { id: finalDraw.householdId },
+    include: { members: true },
+  });
+  if (!household) {
+    return { week, drew: true, emailSent: false };
+  }
+
+  const adultName = firstAdultName(household);
+  const familyName = household.familyName ?? household.token;
+  const text = raffleWinnerEmailText(adultName, familyName, household.members, week, campaign.weeks);
+
+  await sendEmailToHousehold(
+    household,
+    {
+      subject: `Congratulations, ${adultName} and the ${familyName} family!`,
+      text,
+    },
+    "raffle_winner_email",
+    week,
+    process.env.EMAIL_TEST_TO
+  );
+
+  return { week, drew: true, emailSent: true };
+}
+
+export async function runScheduledTuesdayCheckinReminder(): Promise<ReminderRunResult> {
+  const defaultText =
+    "The raffle for the $100 Z Berman Chicago gift card is TODAY at 5pm — you must be checked in to qualify!";
+  return runRaffleDeadlineReminder(defaultText);
+}
+
+export async function runScheduledTuesdayRaffleDraw(): Promise<ReminderRunResult> {
+  const campaign = await getCampaign();
+  const week = lastShabbosWeek(campaign);
+  if (week < 1) {
+    return { week, sent: 0, skipped: 0, details: ["No Shabbos has passed yet."] };
+  }
+
+  const result = await runRaffleWinnerAutomation(week);
+  const sent = result.emailSent ? 1 : 0;
+  const skipped = result.emailSent ? 0 : 1;
+  return {
+    week,
+    sent,
+    skipped,
+    details: [
+      result.drew ? `raffle winner drawn for week ${week}` : `no eligible families for week ${week}`,
+      result.emailSent ? `winner email sent for week ${week}` : `winner email skipped for week ${week}`,
+    ],
+  };
 }

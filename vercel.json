@@ -11,6 +11,14 @@
     {
       "path": "/api/cron/checkin",
       "schedule": "0 14 * * 2"
+    },
+    {
+      "path": "/api/cron/raffle?phase=checkin",
+      "schedule": "0 22 * * 2"
+    },
+    {
+      "path": "/api/cron/raffle?phase=draw",
+      "schedule": "15 22 * * 2"
     }
   ]
 }
